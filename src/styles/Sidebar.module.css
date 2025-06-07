@@ -1,0 +1,94 @@
+.sidebar {
+  height: 100vh;
+  min-height: 800px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: #1e3a5f;
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 16px;
+  justify-content: space-between;
+}
+
+.navList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.navlink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #ffffffcb;
+  padding: 12px;
+  width: 100%;
+  gap: 10px;
+  border-radius: 5px;
+}
+
+.navlink:hover {
+  color: #ffffff;
+}
+
+.icon {
+  font-size: 24px;
+  min-width: 24px; /* Prevents shrinking */
+}
+
+.navName {
+  flex-wrap: nowrap;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.hidden {
+  opacity: 0;
+  width: 0;
+  visibility: hidden;
+}
+
+.navContainer {
+  width: 90%;
+  height: 84%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.toggleButton {
+  width: 100%;
+  background: none;
+  color: #ffffff;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  height: 50px;
+}
+
+.title {
+  color: #ffffff;
+  text-align: center;
+  transition: width 0.4s ease-in-out;
+}
+
+.logo_holder {
+  width: 100%;
+  height: 50px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}

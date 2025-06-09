@@ -27,6 +27,7 @@ export function Input(props: IAppProps) {
         value={props.value}
         onChange={props.change}
         checked={props.check}
+        className="text-black"
       />
       {props.errorMessage && (
         <p className={style.errorText}>

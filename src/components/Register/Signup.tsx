@@ -10,12 +10,12 @@ import { BasicForm } from "./BasicInfoForm";
 import { DetailsForm } from "./DetailsForm";
 import { validateSignup } from "../../utils/validateSignup";
 import { initialUserInfo } from "../../constants/initialUserInfo";
+import { toast } from "react-toastify";
 
 export default function SignUp(): JSX.Element {
   document.title = "Auth | Signup";
 
   const [step, setStep] = useState<"basic" | "details">("basic");
-  const [err, setErr] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [userInfo, setUserInfo] = useState(initialUserInfo);
   const navigate = useNavigate();
@@ -23,19 +23,18 @@ export default function SignUp(): JSX.Element {
 
   useEffect(() => {
     if (error) {
-      setErr(error);
+      toast.error(error);
     }
   }, [error]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErr("");
     setErrors({});
 
     const validationErrors = validateSignup(userInfo);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      setErr("Please fix the highlighted errors.");
+      toast.error("Please fix the highlighted errors.");
       return;
     }
 
@@ -73,6 +72,7 @@ export default function SignUp(): JSX.Element {
     });
 
     if (res) {
+      toast.success(message);
       navigate("/registration-success");
     }
   };
@@ -91,30 +91,12 @@ export default function SignUp(): JSX.Element {
           </Link>
         </div>
 
-        {err && (
-          <p
-            className={style.error}
-            role="alert"
-            style={{ color: "red", marginBottom: "10px" }}
-          >
-            {err}
-          </p>
-        )}
-
-        {message && (
-          <p role="status" style={{ color: "green", marginBottom: "10px" }}>
-            {message}
-          </p>
-        )}
-
         {/* Use semantic fieldsets for grouping form inputs */}
 
         {step === "basic" ? (
           <BasicForm
             change={(e) => {
               handleInputChange(e, setUserInfo);
-              setErr("");
-              setErrors({});
             }}
             value={userInfo}
             errors={errors}
@@ -124,8 +106,6 @@ export default function SignUp(): JSX.Element {
           <DetailsForm
             change={(e) => {
               handleInputChange(e, setUserInfo);
-              setErr("");
-              setErrors({});
             }}
             value={userInfo}
             errors={errors}

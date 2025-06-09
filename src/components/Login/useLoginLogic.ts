@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { LoginType, ErrorType, ValidationErrors } from "./types";
 import { validateLoginForm } from "../../utils/validateForm";
+import { toast } from "react-toastify";
 
 export const useLoginLogic = () => {
   const [next, setNext] = useState(false);
-  const [error, setError] = useState<ErrorType | string>();
   const [successMessage, setSuccessMessage] = useState<string>("");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +19,7 @@ export const useLoginLogic = () => {
   });
 
   const navigate = useNavigate();
-  const { user, serverError, login, clearError } = useAuth();
+  const { user, login } = useAuth();
 
   useEffect(() => {
     document.title = next ? "Auth | Forgotten Password" : "Auth | Login";
@@ -40,34 +40,34 @@ export const useLoginLogic = () => {
           break;
       }
     }
-  }, [user, navigate, serverError]);
+  }, [user, navigate]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setCurrentUser((prev) => ({ ...prev, [name]: value }));
-    clearError();
   };
 
   const handleUserLogin = async (e: FormEvent) => {
     e.preventDefault();
-    setError(undefined);
+    toast.error(undefined);
     const errors = validateLoginForm(currentUser, next);
     setValidationErrors(errors || {});
 
     if (errors && Object.keys(errors).length > 0) {
-      setError("Please fix the errors before continuing.");
+      toast.error("Please fix the errors before continuing.");
       return;
     }
 
     try {
       setIsLoading(true);
+
       await login(currentUser);
     } catch (err) {
       const errorMessage =
         (err as ErrorType)?.response?.data?.message ||
         (err as Error).message ||
         "Something went wrong. Please try again.";
-      setError(errorMessage || serverError);
+      toast.error(errorMessage);
       console.error("Login Error:", err);
     } finally {
       setIsLoading(false);
@@ -75,9 +75,6 @@ export const useLoginLogic = () => {
   };
 
   const handlePasswordReset = async () => {
-    setError(undefined);
-    setSuccessMessage(""); // clear previous
-
     const errors = validateLoginForm(currentUser, next);
     setValidationErrors(errors || {});
 
@@ -86,10 +83,10 @@ export const useLoginLogic = () => {
     try {
       setIsLoading(true);
       // Ideally: await api call here
-      setSuccessMessage("Reset instructions sent to your email.");
+      toast.success("Reset instructions sent to your email.");
     } catch (err) {
       console.error("Password Reset Error:", err);
-      setError("Failed to send reset email.");
+      toast.error("Failed to send reset email.");
     } finally {
       setIsLoading(false);
     }
@@ -98,8 +95,6 @@ export const useLoginLogic = () => {
   return {
     next,
     setNext,
-    error,
-    serverError,
     isLoading,
     currentUser,
     handleInputChange,
@@ -107,7 +102,7 @@ export const useLoginLogic = () => {
     handlePasswordReset,
     validationErrors,
     successMessage,
+
     setSuccessMessage,
-    setError,
   };
 };

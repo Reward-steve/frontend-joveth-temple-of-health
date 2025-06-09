@@ -11,7 +11,6 @@ import { RiLoader2Line } from "react-icons/ri";
 interface Props {
   next: boolean;
   error?: string | null;
-  serverError: string | null;
   isLoading: boolean;
   currentUser: LoginType;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -23,8 +22,6 @@ interface Props {
 
 export const LoginForm = ({
   next,
-  error,
-  serverError,
   isLoading,
   currentUser,
   handleInputChange,
@@ -43,22 +40,6 @@ export const LoginForm = ({
       </div>
 
       <div className={style.authSection}>
-        {error && (
-          <div
-            style={{ color: "red", marginBottom: "1rem", textAlign: "center" }}
-          >
-            {error}
-          </div>
-        )}
-
-        {serverError && (
-          <div
-            style={{ color: "red", marginBottom: "1rem", textAlign: "center" }}
-          >
-            {serverError}
-          </div>
-        )}
-
         <label>
           <Input
             nameTitle="Email Address"
@@ -85,19 +66,13 @@ export const LoginForm = ({
           type="button"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
-          className={style.navlink}
+          className={`${style.navlink} no-underline ${
+            isLoading ? "bg-[#1e9eb2]" : "bg-[#1e9ef4]"
+          } transition-colors`}
           onClick={next ? handlePasswordReset : handleUserLogin}
-          style={{
-            textDecoration: "none",
-            background: isLoading ? "#1e9eb2" : "#1e9ef4",
-          }}
         >
           {isLoading ? (
-            next ? (
-              <RiLoader2Line size={30} />
-            ) : (
-              <RiLoader2Line size={30} />
-            )
+            <RiLoader2Line size={30} />
           ) : next ? (
             "Reset Password"
           ) : (
@@ -109,14 +84,7 @@ export const LoginForm = ({
       <label className={style.bottomText}>
         <p
           onClick={() => setNext(!next)}
-          style={{
-            color: "rgb(0 16 255)",
-            width: "95%",
-            padding: "10px",
-            display: "flex",
-            justifyContent: "end",
-            cursor: "pointer",
-          }}
+          className="text-blue-700 w-[95%] p-2.5 flex justify-end cursor-pointer"
         >
           {next ? "Back to Login" : "Forgotten password?"}
         </p>
@@ -124,7 +92,7 @@ export const LoginForm = ({
 
       <label className={style.bottomText}>
         <p>Need an account?</p>
-        <NavLink style={{ color: "blue" }} to="/auth/signup">
+        <NavLink className="text-blue-600" to="/auth/signup">
           Sign up
         </NavLink>
       </label>

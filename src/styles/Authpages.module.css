@@ -14,24 +14,6 @@
   }
 }
 
-@keyframes shake {
-  0% {
-    transform: translateX(-4px);
-  }
-  25% {
-    transform: translateX(4px);
-  }
-  50% {
-    transform: translateX(-4px);
-  }
-  75% {
-    transform: translateX(4px);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
 /* Layout */
 .authContainer {
   display: flex;
@@ -422,7 +404,6 @@ input[type="email"]:focus {
 }
 
 .bottomText a {
-  color: #1e9ef4;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
@@ -431,8 +412,6 @@ input[type="email"]:focus {
 .bottomText a:hover {
   color: #0d8ae6;
 }
-
-/* //// */
 
 .inputGroup {
   width: 100%;

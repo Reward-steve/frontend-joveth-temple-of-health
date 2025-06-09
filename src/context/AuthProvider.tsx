@@ -4,27 +4,22 @@ import { AuthContext } from "../hooks/AuthContext";
 import { userType } from "../types/User";
 import apiClient from "../utils/apiClient";
 import { RiLoader2Fill } from "react-icons/ri";
-import { ErrorType } from "../components/Login/types";
 import { AxiosError } from "axios";
+import { toast } from "react-toastify";
 
 export interface AuthContextType {
   user: userType | null;
-  serverError: ErrorType | string;
   login: (credentials: { email: string; password: string }) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   loading: boolean;
-  clearError: () => void;
 }
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<userType | null>(null);
-  const [serverError, setServerError] = useState<ErrorType | string>("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  const clearError = () => setServerError("");
 
   const verifyAuthWithProtectedEndpoint = async () => {
     setLoading(true);
@@ -60,20 +55,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const response = await apiClient.post("/auth/login", { email, password });
 
+      // if (response.status != 200) {
+      //   toast.error("Failed to Login");
+      //   console.log("errrir...");
+      //   return;
+      // }
+      console.log(response);
+
       if (response.status === 200 && response.data.user) {
         setUser(response.data.user);
         setIsAuthenticated(true);
+        toast.success("Login successfull");
         console.log("🚀 User logged in:", response.data.user.role);
-      } else {
-        setUser(null);
-        setIsAuthenticated(false);
-        setServerError("Login succeeded but no user returned.");
       }
     } catch (error: unknown) {
       const err = error as AxiosError<{ message: string }>;
       const errorMessage =
         err.response?.data?.message || "An unexpected error occurred.";
-      setServerError(errorMessage);
+      toast.error(errorMessage);
       setUser(null);
       setIsAuthenticated(false);
       throw error;
@@ -104,25 +103,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     <AuthContext.Provider
       value={{
         user,
-        serverError,
         login,
         logout,
         isAuthenticated,
         loading,
-        clearError,
       }}
     >
       {loading ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "100vw",
-            height: "100vh",
-          }}
-        >
-          <RiLoader2Fill size={50} className="spin" />
+        <div className="w-full h-screen flex justify-center items-center">
+          <RiLoader2Fill size={50} className="spin text-white" />
         </div>
       ) : (
         children

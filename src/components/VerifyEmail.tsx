@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import StatusCard from "./StatusCard";
 import { useApi } from "../hooks/useApi";
 import "../styles/VerifyEmail.module.css"; // Add this line for styling
+import { toast } from "react-toastify";
 
 export default function VerifyEmail() {
   const [status, setStatus] = useState<"verifying" | "success" | "error">(
     "verifying"
   );
-  const [msg, setMessage] = useState("");
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { api } = useApi();
@@ -18,8 +17,8 @@ export default function VerifyEmail() {
 
     const verifyEmail = async () => {
       if (!token) {
-        setStatus("error");
-        setMessage("Verification token is missing.");
+        toast.error("error");
+        toast.error("Verification token is missing.");
         return;
       }
 
@@ -27,11 +26,11 @@ export default function VerifyEmail() {
 
       if (response) {
         setStatus("success");
-        setMessage("✅ Your email has been successfully verified!");
+        toast.success("✅ Your email has been successfully verified!");
         setTimeout(() => navigate("/auth/login"), 3000);
       } else {
         setStatus("error");
-        setMessage("❌ Email verification failed. Please try again.");
+        toast.error("❌ Email verification failed. Please try again.");
       }
     };
 
@@ -43,31 +42,11 @@ export default function VerifyEmail() {
       <div className="verify-box">
         {status === "verifying" && (
           <div className="verifying">
-            <div className="loader"></div>
-            <p>Verifying your email. Please wait...</p>
+            <div className="loader animte-rotate"></div>
+            {status === "verifying" && (
+              <p>Verifying your email. Please wait...</p>
+            )}
           </div>
-        )}
-
-        {status === "success" && (
-          <StatusCard
-            type="success"
-            message={msg}
-            onClose={() => {
-              setStatus("verifying");
-              setMessage("");
-            }}
-          />
-        )}
-
-        {status === "error" && (
-          <StatusCard
-            type="error"
-            message={msg}
-            onClose={() => {
-              setStatus("verifying");
-              setMessage("");
-            }}
-          />
         )}
       </div>
     </div>

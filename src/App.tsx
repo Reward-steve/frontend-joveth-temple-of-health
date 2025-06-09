@@ -13,6 +13,7 @@ import Logout from "./components/Logout";
 import NotFound from "./pages/NotFound";
 import Forbidden from "./pages/Forbidden";
 import RegistrationSuccess from "./pages/RegistrationSuccessful";
+import { ToastContainer } from "react-toastify";
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,16 @@ const App: React.FC = () => {
       <AuthProvider>
         <ApiProvider>
           <ThemeProvider>
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
             <Routes>
               {/* ✅ Public Routes */}
               <Route path="/auth/login" element={<Login />} />

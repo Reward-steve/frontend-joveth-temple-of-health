@@ -29,7 +29,7 @@ export default {
           primary: "#3f83f8",
           secondary: "#8e8e93",
         },
-        error: "#e3342f",
+        error: "red",
       },
     },
   },

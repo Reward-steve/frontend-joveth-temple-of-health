@@ -1,78 +1,97 @@
 import { motion } from "framer-motion";
-import { Input } from "../Inputs";
-import style from "../../styles/Authpages.module.css";
+import FormInput from "../form/FormInputs";
 import { DetailsFormProps } from "../../types/SignupFormProps";
+import { FormContent } from "../form/FormContent";
 
 export const DetailsForm = ({
-  change,
-  value,
+  register,
   errors,
   step,
   isLoading,
+  value,
 }: DetailsFormProps) => {
   return (
-    <div className={style.authSection}>
-      <label>
-        <Input
-          nameTitle="Country"
+    <FormContent>
+      <div className="w-full flex flex-col md:flex-row gap-4">
+        <FormInput
+          id="country"
+          label="Country"
           type="text"
-          name="country"
           placeholder="Nigeria"
-          value={value.country}
-          change={change}
-          errorMessage={errors.country}
+          register={register("country", {
+            required: "Country is required.",
+          })}
+          error={errors.country}
         />
-        <Input
-          nameTitle="State"
+        <FormInput
+          id="state"
+          label="State"
           type="text"
-          name="state"
           placeholder="Lagos State"
-          value={value.state}
-          change={change}
-          errorMessage={errors.state}
+          register={register("state", {
+            required: "State is required.",
+          })}
+          error={errors.state}
         />
-      </label>
-      <label>
-        <Input
-          nameTitle="City"
+      </div>
+      <div className="w-full flex flex-col md:flex-row gap-4">
+        <FormInput
+          id="city"
+          label="City"
           type="text"
-          name="city"
           placeholder="Lagos"
-          value={value.city}
-          change={change}
-          errorMessage={errors.city}
+          register={register("city", {
+            required: "City is required.",
+          })}
+          error={errors.city}
         />
-        <Input
-          nameTitle="Street"
+        <FormInput
+          id="street"
+          label="Street"
           type="text"
-          name="street"
           placeholder="No.3 Okoko miko"
-          value={value.street}
-          change={change}
-          errorMessage={errors.street}
+          register={register("street", {
+            required: "Street is required.",
+          })}
+          error={errors.street}
         />
-      </label>
-      <label>
-        <Input
-          nameTitle="Emergency Number"
-          type="number"
-          name="emergencyPhone"
+      </div>
+      <div className="w-full flex flex-col md:flex-row gap-4">
+        <FormInput
+          id="emergencyPhone"
+          label="Emergency Number"
+          type="tel"
           placeholder="+234 80 980 67 213"
-          value={value.emergencyPhone}
-          change={change}
-          errorMessage={errors.emergencyPhone}
+          register={register("emergencyPhone", {
+            required: "Emergency phone number is required.",
+            pattern: {
+              value: /^\+?\d{10,15}$/,
+              message: "Please enter a valid phone number (10-15 digits).",
+            },
+          })}
+          error={errors.emergencyPhone}
         />
-        <Input
-          nameTitle="Emergency Contact Name"
+        <FormInput
+          id="emergencyName"
+          label="Emergency Contact Name"
           type="text"
-          name="emergencyName"
           placeholder="Dandison Evelyn"
-          value={value.emergencyName}
-          change={change}
-          errorMessage={errors.emergencyName}
+          register={register("emergencyName", {
+            required: "Emergency contact name is required.",
+          })}
+          error={errors.emergencyName}
         />
-      </label>
-      <select name="relationship" value={value.relationship} onChange={change}>
+      </div>
+      {errors.relationship && (
+        <p className="text-red-600 mt-1">{errors.relationship.message}</p>
+      )}
+      <select
+        {...register("relationship", {
+          required: "Please select a relationship.",
+        })}
+        className="text-black border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full mt-2"
+        defaultValue={value.relationship || ""}
+      >
         <option disabled value="">
           Relationship
         </option>
@@ -82,37 +101,25 @@ export const DetailsForm = ({
         <option value="Friend">Friend</option>
         <option value="Other">Other</option>
       </select>
-      {errors.relationship && (
-        <p style={{ color: "red", marginTop: "4px" }}>{errors.relationship}</p>
-      )}
 
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          marginTop: "15px",
-          width: "100%",
-        }}
-      >
+      <div className="flex gap-2.5 mt-4 w-full">
         <motion.button
           type="button"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
-          className={style.navlink}
-          style={{ background: "gray" }}
+          className="font-normal text-white text-center cursor-pointer transition-transform transition-colors duration-300 no-underline w-1/2 py-3 px-12 rounded-[10px] my-2 bg-gray-500"
           onClick={step}
         >
           Prev
         </motion.button>
         <button
           type="submit"
-          className={style.navlink}
+          className="font-normal text-white text-center cursor-pointer transition-transform transition-colors duration-300 no-underline w-1/2 py-3 px-12 rounded-[10px] my-2 bg-[#1e9ef4]"
           disabled={isLoading}
-          style={{ background: "#1e9ef4" }}
         >
           {isLoading ? "Registering..." : "Sign Up"}
         </button>
       </div>
-    </div>
+    </FormContent>
   );
 };

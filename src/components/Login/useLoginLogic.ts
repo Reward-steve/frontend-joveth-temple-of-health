@@ -1,22 +1,13 @@
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { LoginType, ErrorType, ValidationErrors } from "./types";
+import { ErrorType } from "./types";
 import { validateLoginForm } from "../../utils/validateForm";
 import { toast } from "react-toastify";
 
 export const useLoginLogic = () => {
   const [next, setNext] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string>("");
-
   const [isLoading, setIsLoading] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
-    {}
-  );
-  const [currentUser, setCurrentUser] = useState<LoginType>({
-    email: "",
-    password: "",
-  });
 
   const navigate = useNavigate();
   const { user, login } = useAuth();
@@ -42,16 +33,12 @@ export const useLoginLogic = () => {
     }
   }, [user, navigate]);
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setCurrentUser((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleUserLogin = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleUserLogin = async (data: {
+    email: string;
+    password: string;
+  }): Promise<void> => {
     toast.error(undefined);
-    const errors = validateLoginForm(currentUser, next);
-    setValidationErrors(errors || {});
+    const errors = validateLoginForm(data, next);
 
     if (errors && Object.keys(errors).length > 0) {
       toast.error("Please fix the errors before continuing.");
@@ -60,8 +47,7 @@ export const useLoginLogic = () => {
 
     try {
       setIsLoading(true);
-
-      await login(currentUser);
+      await login(data);
     } catch (err) {
       const errorMessage =
         (err as ErrorType)?.response?.data?.message ||
@@ -74,9 +60,11 @@ export const useLoginLogic = () => {
     }
   };
 
-  const handlePasswordReset = async () => {
-    const errors = validateLoginForm(currentUser, next);
-    setValidationErrors(errors || {});
+  const handlePasswordReset = async (data: {
+    email: string;
+    password: string;
+  }): Promise<void> => {
+    const errors = validateLoginForm(data, next);
 
     if (errors && Object.keys(errors).length > 0) return;
 
@@ -96,13 +84,7 @@ export const useLoginLogic = () => {
     next,
     setNext,
     isLoading,
-    currentUser,
-    handleInputChange,
     handleUserLogin,
     handlePasswordReset,
-    validationErrors,
-    successMessage,
-
-    setSuccessMessage,
   };
 };

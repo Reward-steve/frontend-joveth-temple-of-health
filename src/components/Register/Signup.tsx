@@ -1,126 +1,58 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
-import style from "../../styles/Authpages.module.css";
-import { FaHome } from "react-icons/fa";
-import { useApi } from "../../hooks/useApi";
-import handleInputChange from "../../utils/handleInputChange";
+import { NavLink } from "react-router-dom";
 import { AuthHolder } from "../AuthHolder";
 import { BasicForm } from "./BasicInfoForm";
 import { DetailsForm } from "./DetailsForm";
-import { validateSignup } from "../../utils/validateSignup";
-import { initialUserInfo } from "../../constants/initialUserInfo";
-import { toast } from "react-toastify";
+
+import { FormHeader } from "../form/FormHeader";
+import Form from "../form/Form";
+import { useSignupLogic } from "./useSignupLogic";
 
 export default function SignUp(): JSX.Element {
   document.title = "Auth | Signup";
-
-  const [step, setStep] = useState<"basic" | "details">("basic");
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [userInfo, setUserInfo] = useState(initialUserInfo);
-  const navigate = useNavigate();
-  const { api, error, isLoading, message } = useApi();
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-  }, [error]);
-
-  const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
-
-    const validationErrors = validateSignup(userInfo);
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      toast.error("Please fix the highlighted errors.");
-      return;
-    }
-
-    const {
-      firstname,
-      lastname,
-      username,
-      email,
-      password,
-      gender,
-      dateOfBirth,
-      country,
-      state,
-      city,
-      street,
-      emergencyName,
-      emergencyPhone,
-      relationship,
-    } = userInfo;
-
-    const res = await api("POST", "auth/register", {
-      firstname,
-      lastname,
-      username,
-      email,
-      password,
-      dateOfBirth,
-      gender,
-      address: { country, state, city, street },
-      emergencyContact: {
-        name: emergencyName,
-        phone: emergencyPhone,
-        relationship,
-      },
-    });
-
-    if (res) {
-      toast.success(message);
-      navigate("/registration-success");
-    }
-  };
+  const {
+    step,
+    setStep,
+    isLoading,
+    register,
+    handleSubmit,
+    errors,
+    getValues,
+    onSubmit,
+  } = useSignupLogic();
 
   return (
     <AuthHolder>
-      <form
-        onSubmit={handleAuth}
-        className={style.loginForm}
+      <Form
+        handleOnSubmit={handleSubmit(onSubmit)}
         aria-labelledby="signup-heading"
       >
-        <div className={style.iconholder}>
-          <h3 id="signup-heading">Sign Up</h3>
-          <Link to="/" className={style.homeIcon} aria-label="Go to homepage">
-            <FaHome size={20} />
-          </Link>
-        </div>
-
-        {/* Use semantic fieldsets for grouping form inputs */}
+        <FormHeader title="Sign Up" />
 
         {step === "basic" ? (
           <BasicForm
-            change={(e) => {
-              handleInputChange(e, setUserInfo);
-            }}
-            value={userInfo}
+            register={register}
             errors={errors}
             step={() => setStep("details")}
+            value={getValues()} // for radio checked state
           />
         ) : (
           <DetailsForm
-            change={(e) => {
-              handleInputChange(e, setUserInfo);
-            }}
-            value={userInfo}
+            register={register}
             errors={errors}
             step={() => setStep("basic")}
             isLoading={isLoading}
+            value={getValues()}
           />
         )}
 
-        <label className={style.bottomText}>
+        <label className="text-center text-base text-[#555] my-4 flex justify-center gap-2.5">
           <p>Already have an account?</p>
-          <NavLink style={{ color: "blue" }} to="/auth/login">
+          <NavLink className="text-blue-600" to="/auth/login">
             Log in
           </NavLink>
         </label>
-      </form>
+      </Form>
     </AuthHolder>
   );
 }

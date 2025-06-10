@@ -11,8 +11,8 @@ export const validateLoginForm = (user: LoginType, isReset: boolean) => {
   if (!isReset) {
     if (!user.password) {
       errors.password = "Password is required.";
-    } else if (user.password.length < 6) {
-      errors.password = "Password must be at least 6 characters.";
+    } else if (user.password.length < 8) {
+      errors.password = "Password must be at least 8 characters.";
     }
   }
 

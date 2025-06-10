@@ -1,75 +1,84 @@
-import React, { FormEvent } from "react";
-import { FaHome } from "react-icons/fa";
-import { NavLink, Link } from "react-router-dom";
+import React from "react";
+import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
-import style from "../../styles/Authpages.module.css";
-import { Input } from "../Inputs";
-import { TogglePassword } from "../TogglePassword";
-import { LoginType, ValidationErrors } from "./types";
+import FormInput from "../form/FormInputs";
 import { RiLoader2Line } from "react-icons/ri";
+import Form from "../form/Form";
+import { FormHeader } from "../form/FormHeader";
+import { useForm } from "react-hook-form";
+import { FormContent } from "../form/FormContent";
+
+type LoginFormValues = {
+  email: string;
+  password: string;
+};
 
 interface Props {
   next: boolean;
   error?: string | null;
   isLoading: boolean;
-  currentUser: LoginType;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleUserLogin: (e: FormEvent) => void;
-  handlePasswordReset: () => void;
   setNext: React.Dispatch<React.SetStateAction<boolean>>;
-  validateErrors: ValidationErrors;
+  handlePasswordReset: (data: LoginFormValues) => void;
+  onLogin: (data: LoginFormValues) => void;
 }
 
 export const LoginForm = ({
   next,
   isLoading,
-  currentUser,
-  handleInputChange,
-  handleUserLogin,
-  handlePasswordReset,
   setNext,
-  validateErrors,
+  handlePasswordReset,
+  onLogin,
 }: Props) => {
-  return (
-    <form className={style.loginForm} onSubmit={(e) => e.preventDefault()}>
-      <div className={style.iconholder}>
-        <h3>{next ? "Forgotten Password" : "Log in"}</h3>
-        <Link to="/" className={style.homeIcon}>
-          <FaHome size={20} />
-        </Link>
-      </div>
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>();
 
-      <div className={style.authSection}>
-        <label>
-          <Input
-            nameTitle="Email Address"
+  return (
+    <Form handleOnSubmit={handleSubmit(next ? handlePasswordReset : onLogin)}>
+      <FormHeader title={next ? "Forgotten Password" : "Log in"} />
+      <FormContent>
+        <label className="w-full flex items-center pt-2.5">
+          <FormInput
+            label="Email Address"
             type="email"
-            name="email"
-            value={currentUser.email}
             placeholder="ayojackson@example.com"
-            change={handleInputChange}
-            errorMessage={validateErrors.email}
+            register={register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /\S+@\S+\.\S+/,
+                message: "Invalid email format.",
+              },
+            })}
+            error={errors.email}
           />
         </label>
-
         {!next && (
-          <label>
-            <TogglePassword
-              password={currentUser.password}
-              change={handleInputChange}
-              errorMessage={validateErrors.password}
+          <label className="w-full flex items-center pt-2.5">
+            <FormInput
+              id="password"
+              label="Password"
+              type="password"
+              register={register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters.",
+                },
+              })}
+              error={errors?.password}
             />
           </label>
         )}
-
         <motion.button
-          type="button"
+          type="submit"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
-          className={`${style.navlink} no-underline ${
+          className={`font-normal text-white text-center cursor-pointer  transition-colors duration-300 no-underline w-full py-3 px-12 rounded-[10px] my-2 ${
             isLoading ? "bg-[#1e9eb2]" : "bg-[#1e9ef4]"
-          } transition-colors`}
-          onClick={next ? handlePasswordReset : handleUserLogin}
+          }`}
+          disabled={isLoading}
         >
           {isLoading ? (
             <RiLoader2Line size={30} />
@@ -79,23 +88,23 @@ export const LoginForm = ({
             "Login"
           )}
         </motion.button>
-      </div>
+      </FormContent>
 
-      <label className={style.bottomText}>
+      <div className="w-[95%] my-4 flex justify-center">
         <p
           onClick={() => setNext(!next)}
           className="text-blue-700 w-[95%] p-2.5 flex justify-end cursor-pointer"
         >
           {next ? "Back to Login" : "Forgotten password?"}
         </p>
-      </label>
+      </div>
 
-      <label className={style.bottomText}>
+      <label className="text-center text-base text-[#555] my-4 flex justify-center gap-2.5">
         <p>Need an account?</p>
         <NavLink className="text-blue-600" to="/auth/signup">
           Sign up
         </NavLink>
       </label>
-    </form>
+    </Form>
   );
 };

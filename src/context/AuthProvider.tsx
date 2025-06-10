@@ -51,16 +51,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     email: string;
     password: string;
   }) => {
-    setLoading(true);
     try {
       const response = await apiClient.post("/auth/login", { email, password });
 
-      // if (response.status != 200) {
-      //   toast.error("Failed to Login");
-      //   console.log("errrir...");
-      //   return;
-      // }
-      console.log(response);
+      if (response.status != 200) {
+        toast.error("Failed to Login");
+        console.log("errrir...");
+        return;
+      }
 
       if (response.status === 200 && response.data.user) {
         setUser(response.data.user);

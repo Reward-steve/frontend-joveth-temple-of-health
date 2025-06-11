@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../hooks/AuthContext";
 import { userType } from "../types/User";
 import apiClient from "../utils/apiClient";
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
+  const location = useLocation();
   const verifyAuthWithProtectedEndpoint = async () => {
     setLoading(true);
     try {
@@ -36,7 +36,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const err = error as AxiosError;
       setUser(null);
       setIsAuthenticated(false);
-      if (err?.response?.status?.toString().startsWith("4")) {
+      if (
+        err?.response?.status?.toString().startsWith("4") &&
+        !["/reset-password", "/verify-email"].includes(location.pathname)
+      ) {
         navigate("/auth/login");
       }
     } finally {
@@ -54,7 +57,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const response = await apiClient.post("/auth/login", { email, password });
 
-      if (response.status != 200) {
+      if (!response) {
         toast.error("Failed to Login");
         console.log("errrir...");
         return;
@@ -73,7 +76,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       toast.error(errorMessage);
       setUser(null);
       setIsAuthenticated(false);
-      throw error;
     } finally {
       setLoading(false);
     }
@@ -109,7 +111,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     >
       {loading ? (
         <div className="w-full h-screen flex justify-center items-center">
-          <RiLoader2Fill size={50} className="spin text-white" />
+          <RiLoader2Fill size={50} className="animate-spin text-white" />
         </div>
       ) : (
         children

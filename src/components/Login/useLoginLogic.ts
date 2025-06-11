@@ -2,15 +2,20 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ErrorType } from "./types";
-import { validateLoginForm } from "../../utils/validateForm";
+import { validateLoginForm, validateEmail } from "../../utils/validateForm";
 import { toast } from "react-toastify";
+import { useApi } from "../../hooks/useApi";
+
+type LoginData = { email: string; password: string };
+type ResetData = { email: string };
 
 export const useLoginLogic = () => {
   const [next, setNext] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { user, login } = useAuth();
+  const { user } = useAuth();
+  const { api, message, error } = useApi();
 
   useEffect(() => {
     document.title = next ? "Auth | Forgotten Password" : "Auth | Login";
@@ -29,15 +34,14 @@ export const useLoginLogic = () => {
         case "Doctor":
           navigate("/doctor/dashboard");
           break;
+        default:
+          navigate("/");
       }
     }
   }, [user, navigate]);
 
-  const handleUserLogin = async (data: {
-    email: string;
-    password: string;
-  }): Promise<void> => {
-    toast.error(undefined);
+  // Login handler
+  const handleUserLogin = async (data: LoginData): Promise<void> => {
     const errors = validateLoginForm(data, next);
 
     if (errors && Object.keys(errors).length > 0) {
@@ -45,33 +49,48 @@ export const useLoginLogic = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      await login(data);
+      const res = await api("POST", "/auth/login", data);
+      if (error) {
+        toast.error(error);
+      } else if (!res) {
+        toast.error("Login failed. Please try again.");
+      } else {
+        toast.success(message || "Login successful!");
+        // Navigation will be handled by the user effect above
+      }
     } catch (err) {
       const errorMessage =
         (err as ErrorType)?.response?.data?.message ||
         (err as Error).message ||
         "Something went wrong. Please try again.";
       toast.error(errorMessage);
-      console.error("Login Error:", err);
+      console.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handlePasswordReset = async (data: {
-    email: string;
-    password: string;
-  }): Promise<void> => {
-    const errors = validateLoginForm(data, next);
+  // Password reset handler
+  const handleForgottenPassword = async (data: ResetData): Promise<void> => {
+    const errors = validateEmail(data);
 
-    if (errors && Object.keys(errors).length > 0) return;
+    if (errors && Object.keys(errors).length > 0) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
 
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      // Ideally: await api call here
-      toast.success("Reset instructions sent to your email.");
+      const forgottenPassword = await api("POST", "/auth/forgotpassword", {
+        email: data.email,
+      });
+      if (!forgottenPassword) {
+        toast.error(error || "Failed to send reset email.");
+      } else {
+        toast.success(message || "Reset instructions sent to your email.");
+      }
     } catch (err) {
       console.error("Password Reset Error:", err);
       toast.error("Failed to send reset email.");
@@ -85,6 +104,6 @@ export const useLoginLogic = () => {
     setNext,
     isLoading,
     handleUserLogin,
-    handlePasswordReset,
+    handleForgottenPassword,
   };
 };

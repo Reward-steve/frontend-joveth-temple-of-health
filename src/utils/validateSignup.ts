@@ -34,8 +34,8 @@ export function validateSignup(userInfo: Record<string, string>) {
   // Password
   if (!userInfo.password) {
     errors.password = "Password is required.";
-  } else if (userInfo.password.length < 6) {
-    errors.password = "Password must be at least 6 characters.";
+  } else if (userInfo.password.length < 8) {
+    errors.password = "Password must be at least 8 characters.";
   }
 
   // Gender

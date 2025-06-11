@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import FormInput from "../form/FormInputs";
 import { DetailsFormProps } from "../../types/SignupFormProps";
 import { FormContent } from "../form/FormContent";
+import { Button } from "../Button";
 
 export const DetailsForm = ({
   register,
@@ -83,7 +84,7 @@ export const DetailsForm = ({
         />
       </div>
       {errors.relationship && (
-        <p className="text-red-600 mt-1">{errors.relationship.message}</p>
+        <p className="text-error mt-1">{errors.relationship.message}</p>
       )}
       <select
         {...register("relationship", {
@@ -107,18 +108,15 @@ export const DetailsForm = ({
           type="button"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
-          className="font-normal text-white text-center cursor-pointer transition-transform transition-colors duration-300 no-underline w-1/2 py-3 px-12 rounded-[10px] my-2 bg-gray-500"
+          className="font-normal text-white text-center cursor-pointer flex justify-center items-center transition-colors duration-300 no-underline w-1/2 py-3 px-12 rounded-[10px] my-2 bg-gray-500"
           onClick={step}
         >
           Prev
         </motion.button>
-        <button
-          type="submit"
-          className="font-normal text-white text-center cursor-pointer transition-transform transition-colors duration-300 no-underline w-1/2 py-3 px-12 rounded-[10px] my-2 bg-[#1e9ef4]"
-          disabled={isLoading}
-        >
-          {isLoading ? "Registering..." : "Sign Up"}
-        </button>
+
+        <Button type="submit" className="w-1/2" loading={isLoading}>
+          Sign Up
+        </Button>
       </div>
     </FormContent>
   );

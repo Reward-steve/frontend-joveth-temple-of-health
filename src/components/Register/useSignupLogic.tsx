@@ -12,7 +12,7 @@ export function useSignupLogic() {
   const navigate = useNavigate();
   const { api, error, isLoading, message } = useApi();
 
-  // Setup react-hook-form
+  // Setup react-hook-form with type
   const {
     register,
     handleSubmit,
@@ -20,7 +20,7 @@ export function useSignupLogic() {
     getValues,
     setError,
     reset,
-  } = useForm({ defaultValues: initialUserInfo });
+  } = useForm<SignupFormValues>({ defaultValues: initialUserInfo });
 
   useEffect(() => {
     if (error) {
@@ -29,7 +29,6 @@ export function useSignupLogic() {
   }, [error]);
 
   const onSubmit = async (data: SignupFormValues) => {
-    console.log("data");
     // Optional: custom validation
     const validationErrors = validateSignup(data);
     if (Object.keys(validationErrors).length > 0) {
@@ -74,9 +73,11 @@ export function useSignupLogic() {
     });
 
     if (res) {
-      toast.success(message);
+      if (message) {
+        toast.success(message);
+      }
       navigate("/registration-success");
-      reset();
+      reset(initialUserInfo); // Reset form to initial values
     }
   };
 

@@ -1,103 +1,64 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../hooks/AuthContext";
 import { userType } from "../types/User";
-import apiClient from "../utils/apiClient";
-import { RiLoader2Fill } from "react-icons/ri";
-import { AxiosError } from "axios";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { verifyAuth, loginUser, logoutUser } from "../services/auth";
 import { toast } from "react-toastify";
-
-export interface AuthContextType {
-  user: userType | null;
-  login: (credentials: { email: string; password: string }) => Promise<void>;
-  logout: () => Promise<void>;
-  isAuthenticated: boolean;
-  loading: boolean;
-}
+import { RiLoader2Fill } from "react-icons/ri";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<userType | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  const verifyAuthWithProtectedEndpoint = async () => {
-    setLoading(true);
+  const queryClient = useQueryClient();
+
+  // Checks if user is authenticated
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useQuery<userType | null>({
+    queryKey: ["authStatus"],
+    queryFn: verifyAuth,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+  // Redirect to login if user is not authenticated and not on a special route
+  React.useEffect(() => {
+    if (
+      isError &&
+      !["/reset-password", "/verify-email"].includes(location.pathname)
+    ) {
+      navigate("/auth/login");
+    }
+  }, [isError, location.pathname, navigate]);
+
+  // Handles user login
+  const login = async (credentials: { email: string; password: string }) => {
     try {
-      const { status, data } = await apiClient.get("auth/check-auth");
-      if (status === 200 && data.user) {
-        setUser(data.user);
-        setIsAuthenticated(true);
-      } else {
-        setUser(null);
-        setIsAuthenticated(false);
-      }
-    } catch (error: unknown) {
-      const err = error as AxiosError;
-      setUser(null);
-      setIsAuthenticated(false);
-      if (
-        err?.response?.status?.toString().startsWith("4") &&
-        !["/reset-password", "/verify-email"].includes(location.pathname)
-      ) {
-        navigate("/auth/login");
-      }
-    } finally {
-      setLoading(false);
+      const loggedInUser = await loginUser(credentials);
+      queryClient.setQueryData(["authStatus"], loggedInUser);
+      toast.success("Login successful");
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
+      const message = error.response?.data?.message || "Login failed";
+      toast.error(message);
     }
   };
 
-  const login = async ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
-    try {
-      const response = await apiClient.post("/auth/login", { email, password });
-
-      if (!response) {
-        toast.error("Failed to Login");
-        console.log("errrir...");
-        return;
-      }
-
-      if (response.status === 200 && response.data.user) {
-        setUser(response.data.user);
-        setIsAuthenticated(true);
-        toast.success("Login successfull");
-        console.log("🚀 User logged in:", response.data.user.role);
-      }
-    } catch (error: unknown) {
-      const err = error as AxiosError<{ message: string }>;
-      const errorMessage =
-        err.response?.data?.message || "An unexpected error occurred.";
-      toast.error(errorMessage);
-      setUser(null);
-      setIsAuthenticated(false);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Handles user logout
   const logout = async () => {
-    setLoading(true);
     try {
       if (!user?._id) throw new Error("User ID is missing.");
-      await apiClient.post(`/auth/logout/${user._id}`);
-    } catch (error) {
-      console.warn("Logout request failed:", error);
+      await logoutUser(user._id);
+    } catch (err) {
+      console.warn("Logout failed:", err);
     } finally {
-      setUser(null);
-      setIsAuthenticated(false);
-      setLoading(false);
+      queryClient.setQueryData(["authStatus"], null);
     }
   };
-
-  useEffect(() => {
-    (async () => await verifyAuthWithProtectedEndpoint())();
-  }, []);
 
   return (
     <AuthContext.Provider
@@ -105,11 +66,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         user,
         login,
         logout,
-        isAuthenticated,
-        loading,
+        isAuthenticated: !!user,
+        loading: isLoading,
       }}
     >
-      {loading ? (
+      {isLoading ? (
+        // Show loading spinner while verifying auth
         <div className="w-full h-screen flex justify-center items-center">
           <RiLoader2Fill size={50} className="animate-spin text-white" />
         </div>

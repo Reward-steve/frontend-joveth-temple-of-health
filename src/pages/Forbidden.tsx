@@ -1,42 +1,23 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { FaBan } from "react-icons/fa";
 
 const Forbidden = () => {
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>403</h1>
-      <p style={styles.message}>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#fff3cd] px-4">
+      <FaBan className="text-6xl text-yellow-500 mb-4" />
+      <h1 className="text-6xl font-extrabold text-yellow-600 mb-2">403</h1>
+      <p className="text-2xl text-yellow-800 mb-6">
         Access Forbidden – You don’t have permission to view this page.
       </p>
-      <Link to="/" style={styles.link}>
+      <Link
+        to="/"
+        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-lg font-semibold transition"
+      >
         Return to Home
       </Link>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    textAlign: "center",
-    padding: "60px",
-    backgroundColor: "#fff3cd",
-    height: "100vh",
-  } as React.CSSProperties,
-  title: {
-    fontSize: "80px",
-    color: "#ffc107",
-  } as React.CSSProperties,
-  message: {
-    fontSize: "22px",
-    color: "#856404",
-  } as React.CSSProperties,
-  link: {
-    marginTop: "20px",
-    display: "inline-block",
-    fontSize: "18px",
-    color: "#007bff",
-    textDecoration: "none",
-  } as React.CSSProperties,
 };
 
 export default Forbidden;

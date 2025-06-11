@@ -1,6 +1,4 @@
 import { BsFillCheckCircleFill } from "react-icons/bs";
-import { FaArrowRightLong } from "react-icons/fa6";
-import { Link } from "react-router-dom";
 
 export default function RegistrationSuccess() {
   return (
@@ -27,12 +25,6 @@ export default function RegistrationSuccess() {
             Verify the email to activate your account.
           </p>
         </header>
-        <Link
-          to="/auth/login"
-          className="bg-[#20c997] text-white px-6 py-2 rounded-lg hover:bg-[#17a589] transition flex items-center gap-2 font-bold"
-        >
-          Go to Login <FaArrowRightLong />
-        </Link>
       </main>
     </div>
   );

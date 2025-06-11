@@ -14,12 +14,21 @@ export const useLoginLogic = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const { api, message, error } = useApi();
 
   useEffect(() => {
     document.title = next ? "Auth | Forgotten Password" : "Auth | Login";
   }, [next]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+    if (message) {
+      toast.success(message);
+    }
+  }, [error, message]);
 
   // Navigate when user logs in
   useEffect(() => {
@@ -51,15 +60,7 @@ export const useLoginLogic = () => {
 
     setIsLoading(true);
     try {
-      const res = await api("POST", "/auth/login", data);
-      if (error) {
-        toast.error(error);
-      } else if (!res) {
-        toast.error("Login failed. Please try again.");
-      } else {
-        toast.success(message || "Login successful!");
-        // Navigation will be handled by the user effect above
-      }
+      await login(data);
     } catch (err) {
       const errorMessage =
         (err as ErrorType)?.response?.data?.message ||
@@ -87,9 +88,7 @@ export const useLoginLogic = () => {
         email: data.email,
       });
       if (!forgottenPassword) {
-        toast.error(error || "Failed to send reset email.");
-      } else {
-        toast.success(message || "Reset instructions sent to your email.");
+        return;
       }
     } catch (err) {
       console.error("Password Reset Error:", err);

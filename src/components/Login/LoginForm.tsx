@@ -1,12 +1,13 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { motion } from "framer-motion";
 import FormInput from "../form/FormInputs";
-import { RiLoader2Line } from "react-icons/ri";
 import Form from "../form/Form";
+import { FaLock } from "react-icons/fa";
 import { FormHeader } from "../form/FormHeader";
 import { useForm } from "react-hook-form";
 import { FormContent } from "../form/FormContent";
+import { Button } from "../Button";
+import { FormHeaderSection } from "../form/FormHeaderSection";
 
 type LoginFormValues = {
   email: string;
@@ -18,7 +19,7 @@ interface Props {
   error?: string | null;
   isLoading: boolean;
   setNext: React.Dispatch<React.SetStateAction<boolean>>;
-  handlePasswordReset: (data: LoginFormValues) => void;
+  handleForgottenPassword: (data: { email: string }) => void;
   onLogin: (data: LoginFormValues) => void;
 }
 
@@ -26,7 +27,7 @@ export const LoginForm = ({
   next,
   isLoading,
   setNext,
-  handlePasswordReset,
+  handleForgottenPassword,
   onLogin,
 }: Props) => {
   const {
@@ -36,8 +37,18 @@ export const LoginForm = ({
   } = useForm<LoginFormValues>();
 
   return (
-    <Form handleOnSubmit={handleSubmit(next ? handlePasswordReset : onLogin)}>
+    <Form
+      handleOnSubmit={handleSubmit(next ? handleForgottenPassword : onLogin)}
+    >
       <FormHeader title={next ? "Forgotten Password" : "Log in"} />
+      <FormHeaderSection
+        icon={<FaLock className="text-4xl text-blue-500" />}
+        message={
+          next
+            ? "Enter your email address and we'll send you instructions to reset your password."
+            : "Welcome back! Please log in to your account."
+        }
+      />
       <FormContent>
         <label className="w-full flex items-center pt-2.5">
           <FormInput
@@ -60,6 +71,7 @@ export const LoginForm = ({
               id="password"
               label="Password"
               type="password"
+              placeholder="********"
               register={register("password", {
                 required: "Password is required",
                 minLength: {
@@ -71,23 +83,9 @@ export const LoginForm = ({
             />
           </label>
         )}
-        <motion.button
-          type="submit"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.95 }}
-          className={`font-normal text-white text-center cursor-pointer  transition-colors duration-300 no-underline w-full py-3 px-12 rounded-[10px] my-2 ${
-            isLoading ? "bg-[#1e9eb2]" : "bg-[#1e9ef4]"
-          }`}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <RiLoader2Line size={30} />
-          ) : next ? (
-            "Reset Password"
-          ) : (
-            "Login"
-          )}
-        </motion.button>
+        <Button type="submit" loading={isLoading} className="w-full">
+          {next ? "Reset Password" : "Login"}
+        </Button>
       </FormContent>
 
       <div className="w-[95%] my-4 flex justify-center">

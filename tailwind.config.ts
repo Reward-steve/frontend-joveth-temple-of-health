@@ -22,11 +22,11 @@ export default {
       },
       colors: {
         dark: {
-          primary: "#1e429f",
+          primary: "#3f83f8",
           secondary: "#0f0f0f",
         },
         light: {
-          primary: "#3f83f8",
+          primary: " #1e9ef4",
           secondary: "#8e8e93",
         },
         error: "red",

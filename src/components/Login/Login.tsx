@@ -3,7 +3,7 @@ import { LoginForm } from "./LoginForm";
 import { useLoginLogic } from "./useLoginLogic";
 
 export default function Login(): JSX.Element {
-  const { next, isLoading, handleUserLogin, handlePasswordReset, setNext } =
+  const { next, isLoading, handleUserLogin, handleForgottenPassword, setNext } =
     useLoginLogic();
 
   return (
@@ -12,7 +12,7 @@ export default function Login(): JSX.Element {
         next={next}
         isLoading={isLoading}
         onLogin={handleUserLogin}
-        handlePasswordReset={handlePasswordReset}
+        handleForgottenPassword={handleForgottenPassword}
         setNext={setNext}
       />
     </AuthHolder>

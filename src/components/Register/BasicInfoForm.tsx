@@ -1,12 +1,11 @@
-import { motion } from "framer-motion";
 import FormInput from "../form/FormInputs";
 import { BasicInfoProps } from "../../types/SignupFormProps";
 import { FormContent } from "../form/FormContent";
+import { Button } from "../Button";
 
 export const BasicForm = ({ register, step, errors }: BasicInfoProps) => {
   return (
     <FormContent>
-      {" "}
       <div className="w-full flex flex-col md:flex-row gap-4">
         <FormInput
           id="firstname"
@@ -56,6 +55,7 @@ export const BasicForm = ({ register, step, errors }: BasicInfoProps) => {
           id="password"
           label="Password"
           type="password"
+          placeholder="********"
           register={register("password", {
             required: "Password is required",
             minLength: {
@@ -118,15 +118,9 @@ export const BasicForm = ({ register, step, errors }: BasicInfoProps) => {
         })}
         error={errors?.dateOfBirth}
       />
-      <motion.button
-        type="button"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.95 }}
-        className="font-normal text-white text-center cursor-pointer transition-transform duration-300 no-underline w-full py-3 px-12 rounded-[10px] my-2 bg-[#1e9ef4] mt-2"
-        onClick={step}
-      >
+      <Button onClick={step} type="button" className="w-full">
         Next
-      </motion.button>
+      </Button>
     </FormContent>
   );
 };

@@ -18,3 +18,14 @@ export const validateLoginForm = (user: LoginType, isReset: boolean) => {
 
   return Object.keys(errors).length > 0 ? errors : null;
 };
+export const validateEmail = (user: { email: string }) => {
+  const errors: ValidationErrors = {};
+
+  if (!user.email) {
+    errors.email = "Email is required.";
+  } else if (!/\S+@\S+\.\S+/.test(user.email)) {
+    errors.email = "Invalid email format.";
+  }
+
+  return Object.keys(errors).length > 0 ? errors : null;
+};

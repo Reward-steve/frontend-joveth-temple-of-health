@@ -13,7 +13,7 @@ export function FormHeaderSection({
 }: FormHeaderSectionProps) {
   return (
     <div className="flex flex-col items-center mb-4">
-      {icon && <span className="mb-2 animate-bounce">{icon}</span>}
+      {icon && <span className="mb-2">{icon}</span>}
       <h2 className="text-2xl font-bold mb-1 text-[#1e3a5f]">{title}</h2>
       {message && <p className="text-gray-600 text-center">{message}</p>}
     </div>

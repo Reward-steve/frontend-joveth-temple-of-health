@@ -26,7 +26,10 @@ export function useSignupLogic() {
     if (error) {
       toast.error(error);
     }
-  }, [error]);
+    if (message) {
+      toast.success(message);
+    }
+  }, [error, message]);
 
   const onSubmit = async (data: SignupFormValues) => {
     // Optional: custom validation
@@ -35,7 +38,6 @@ export function useSignupLogic() {
       Object.entries(validationErrors).forEach(([key, msg]) =>
         setError(key as keyof SignupFormValues, { message: msg as string })
       );
-      toast.error("Please fix the highlighted errors.");
       return;
     }
 
@@ -73,9 +75,6 @@ export function useSignupLogic() {
     });
 
     if (res) {
-      if (message) {
-        toast.success(message);
-      }
       navigate("/registration-success");
       reset(initialUserInfo); // Reset form to initial values
     }

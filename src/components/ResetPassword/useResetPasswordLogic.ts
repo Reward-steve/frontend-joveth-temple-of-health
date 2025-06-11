@@ -8,12 +8,13 @@ type ResetPasswordForm = {
   password: string;
   confirmPassword: string;
 };
+
 export function useResetPasswordLogic() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get("token");
-  const { api, message, error } = useApi();
+  const { api } = useApi();
 
   const {
     register,
@@ -21,38 +22,67 @@ export function useResetPasswordLogic() {
     formState: { errors },
     watch,
     setError,
+    reset,
   } = useForm<ResetPasswordForm>();
 
   const onSubmit = async (data: ResetPasswordForm) => {
     if (!token) {
-      toast.error(error || "Invalid or missing reset token.");
+      toast.error("Invalid or missing reset token.");
       return;
     }
+
     if (data.password !== data.confirmPassword) {
       setError("confirmPassword", { message: "Passwords do not match." });
       return;
     }
+
     try {
       setIsLoading(true);
-      // Replace with your API call:
-      const res = await api("PATCH", `auth/reset-password/${token}`, {
+      const res = await api("POST", `auth/reset-password/${token}`, {
         password: data.password,
       });
-      if (!res) {
-        toast.error(error || "Failed to reset password");
+
+      if (!res || res.status !== "success") {
+        toast.error(res?.message || "Something went wrong.");
+        return;
       }
-      await new Promise((res) => setTimeout(res, 1200)); // Simulate API
-      if (res) {
-        toast.success(
-          message || "Password reset successful! You can now log in."
-        );
-        navigate("/auth/login");
-      }
-    } catch {
+
+      toast.success(
+        res?.message || "Password reset successful! You can now log in."
+      );
+      reset(); // Clear form
+      navigate("/auth/login");
+    } catch (err) {
+      console.error(err);
       toast.error("Failed to reset password. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
-  return { isLoading, register, handleSubmit, errors, watch, onSubmit };
+
+  return {
+    isLoading,
+    register: {
+      password: register("password", {
+        required: "Password is required",
+        minLength: {
+          value: 6,
+          message: "Password must be at least 6 characters",
+        },
+      }),
+      confirmPassword: register("confirmPassword", {
+        required: "Please confirm your password",
+        minLength: {
+          value: 6,
+          message: "Password must be at least 6 characters",
+        },
+        validate: (value) =>
+          value === watch("password") || "Passwords do not match.",
+      }),
+    },
+    handleSubmit,
+    errors,
+    onSubmit,
+    reset,
+  };
 }

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useApi } from "../hooks/useApi";
 import { toast } from "react-toastify";
-import { BsCheckCircleFill, BsXCircleFill } from "react-icons/bs";
+import { BsShieldFillX } from "react-icons/bs";
+import { RiLoader2Line } from "react-icons/ri";
+import { MdVerifiedUser } from "react-icons/md";
 
 export default function VerifyEmail() {
   const [status, setStatus] = useState<"verifying" | "success" | "error">(
@@ -10,7 +12,16 @@ export default function VerifyEmail() {
   );
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { api, message } = useApi();
+  const { api, message, error } = useApi();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+    if (message) {
+      toast.success(message);
+    }
+  }, [error, message]);
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -18,7 +29,6 @@ export default function VerifyEmail() {
     const verifyEmail = async () => {
       if (!token) {
         setStatus("error");
-        toast.error(message || "Verification token is missing.");
         return;
       }
 
@@ -26,11 +36,9 @@ export default function VerifyEmail() {
 
       if (response) {
         setStatus("success");
-        toast.success(message || "Your email has been successfully verified!");
-        setTimeout(() => navigate("/auth/login"), 30000);
+        setTimeout(() => navigate("/auth/login"), 20000);
       } else {
         setStatus("error");
-        toast.error("Email verification failed. Please try again.");
       }
     };
 
@@ -38,7 +46,7 @@ export default function VerifyEmail() {
   }, [searchParams, navigate, api, message]);
 
   return (
-    <div className="flex w-full min-h-screen items-center justify-center bg-[#f0f4ff]">
+    <div className="flex w-full min-h-screen items-center justify-center bg-[#1e3a5f]">
       <div className="max-w-md w-full flex flex-col items-center justify-center bg-white rounded-lg shadow-lg p-8 text-center">
         {status === "verifying" && (
           <>
@@ -50,19 +58,22 @@ export default function VerifyEmail() {
         )}
         {status === "success" && (
           <>
-            <BsCheckCircleFill className="text-green-500 text-6xl mx-auto mb-4" />
+            <MdVerifiedUser className="text-green-500 text-6xl mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-2 text-green-700">
               Email Verified!
             </h2>
             <p className="text-green-600 mb-2">
               Your email has been successfully verified.
             </p>
-            <p className="text-green-600">Redirecting to login...</p>
+            <p className="text-green-600 flex">
+              Redirecting to login...{" "}
+              <RiLoader2Line className="animate-spin" size={24} />
+            </p>
           </>
         )}
         {status === "error" && (
           <>
-            <BsXCircleFill className="text-error text-6xl mx-auto mb-4" />
+            <BsShieldFillX className="text-error text-6xl mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-2 text-red-700">
               Verification Failed
             </h2>

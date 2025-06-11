@@ -2,7 +2,8 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import FormInput from "../form/FormInputs";
 import Form from "../form/Form";
-import { FaLock } from "react-icons/fa";
+import { RiLoginBoxLine } from "react-icons/ri";
+import { MdHelpOutline } from "react-icons/md";
 import { FormHeader } from "../form/FormHeader";
 import { useForm } from "react-hook-form";
 import { FormContent } from "../form/FormContent";
@@ -42,7 +43,13 @@ export const LoginForm = ({
     >
       <FormHeader title={next ? "Forgotten Password" : "Log in"} />
       <FormHeaderSection
-        icon={<FaLock className="text-4xl text-blue-500" />}
+        icon={
+          next ? (
+            <MdHelpOutline className="text-4xl text-green-500" />
+          ) : (
+            <RiLoginBoxLine className="text-4xl text-green-500" />
+          )
+        }
         message={
           next
             ? "Enter your email address and we'll send you instructions to reset your password."

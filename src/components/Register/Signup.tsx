@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { AuthHolder } from "../AuthHolder";
 import { BasicForm } from "./BasicInfoForm";
 import { DetailsForm } from "./DetailsForm";
-import { FaLock } from "react-icons/fa";
+import { FaUserPlus } from "react-icons/fa";
 import { FormHeaderSection } from "../form/FormHeaderSection";
 import { FormHeader } from "../form/FormHeader";
 import Form from "../form/Form";
@@ -30,7 +30,7 @@ export default function SignUp(): JSX.Element {
       >
         <FormHeader title="Sign Up" />
         <FormHeaderSection
-          icon={<FaLock className="text-4xl text-green-500" />}
+          icon={<FaUserPlus className="text-4xl text-green-500" />}
           message="Create your account to get started."
         />
         {step === "basic" ? (

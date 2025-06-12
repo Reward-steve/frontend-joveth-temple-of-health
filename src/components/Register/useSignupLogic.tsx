@@ -4,7 +4,7 @@ import { useApi } from "../../hooks/useApi";
 import { validateSignup } from "../../utils/validateSignup";
 import { initialUserInfo } from "../../constants/initialUserInfo";
 import { toast } from "react-toastify";
-import { SignupFormValues } from "../../types/SignupFormProps";
+import { type SignupFormValues } from "../../types/auth";
 import { useNavigate } from "react-router-dom";
 
 export function useSignupLogic() {

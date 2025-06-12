@@ -29,7 +29,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   React.useEffect(() => {
     if (
       isError &&
-      !["/reset-password", "/verify-email"].includes(location.pathname)
+      ![
+        "/reset-password",
+        "/verify-email",
+        "/auth/signup",
+        "/auth/forgotten-password",
+      ].includes(location.pathname)
     ) {
       navigate("/auth/login");
     }

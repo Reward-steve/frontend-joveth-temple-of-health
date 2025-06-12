@@ -1,28 +1,34 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import FormInput from "../form/FormInputs";
 import Form from "../form/Form";
-import { RiLoginBoxLine } from "react-icons/ri";
-import { FormHeader } from "../form/FormHeader";
-import { useForm } from "react-hook-form";
-import { FormContent } from "../form/FormContent";
 import { Button } from "../Button";
+import { FormHeader } from "../form/FormHeader";
 import { FormHeaderSection } from "../form/FormHeaderSection";
-import { type LoginFormValues, type LoginFormProps } from "../../types/auth";
+import { MdHelpOutline } from "react-icons/md";
+import { FormContent } from "../form/FormContent";
+import {
+  type ForgottenPasswordFormValues,
+  type ForgottenPasswordProps,
+} from "../../types/auth";
 
-export const LoginForm = ({ isLoading, onLogin }: LoginFormProps) => {
+const ForgottenPasswordForm: React.FC<ForgottenPasswordProps> = ({
+  isLoading,
+  onSubmit,
+}) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormValues>();
+  } = useForm<ForgottenPasswordFormValues>();
 
   return (
-    <Form handleOnSubmit={handleSubmit(onLogin)}>
-      <FormHeader title="Log in" />
+    <Form handleOnSubmit={handleSubmit(onSubmit)}>
+      <FormHeader title="Forgotten Password" />
       <FormHeaderSection
-        icon={<RiLoginBoxLine className="text-4xl text-green-500" />}
-        message="Welcome back! Please log in to your account."
+        icon={<MdHelpOutline className="text-4xl text-green-500" />}
+        message="Enter your email address and we'll send you instructions to reset your password."
       />
       <FormContent>
         <label className="w-full flex items-center pt-2.5">
@@ -40,32 +46,16 @@ export const LoginForm = ({ isLoading, onLogin }: LoginFormProps) => {
             error={errors.email}
           />
         </label>
-        <label className="w-full flex items-center pt-2.5">
-          <FormInput
-            id="password"
-            label="Password"
-            type="password"
-            placeholder="********"
-            register={register("password", {
-              required: "Password is required",
-              minLength: {
-                value: 8,
-                message: "Password must be at least 8 characters.",
-              },
-            })}
-            error={errors.password}
-          />
-        </label>
         <Button type="submit" loading={isLoading} className="w-full">
-          Login
+          Reset Password
         </Button>
       </FormContent>
       <div className="w-[95%] my-4 flex justify-center">
         <NavLink
-          to="/auth/forgotten-password"
+          to="/auth/login"
           className="text-blue-700 w-[95%] p-2.5 flex justify-end cursor-pointer"
         >
-          Forgotten password?
+          Back to Login
         </NavLink>
       </div>
       <label className="text-center text-base text-[#555] my-4 flex justify-center gap-2.5">
@@ -77,3 +67,5 @@ export const LoginForm = ({ isLoading, onLogin }: LoginFormProps) => {
     </Form>
   );
 };
+
+export default ForgottenPasswordForm;

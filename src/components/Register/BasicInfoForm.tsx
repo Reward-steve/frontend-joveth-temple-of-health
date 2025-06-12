@@ -1,5 +1,5 @@
 import FormInput from "../form/FormInputs";
-import { BasicInfoProps } from "../../types/SignupFormProps";
+import { type BasicInfoProps } from "../../types/auth";
 import { FormContent } from "../form/FormContent";
 import { Button } from "../Button";
 

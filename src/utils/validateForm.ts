@@ -1,5 +1,5 @@
-import { ValidationErrors, LoginType } from "../components/Login/types";
-export const validateLoginForm = (user: LoginType, isReset: boolean) => {
+import { type ValidationErrors, type LoginFormValues } from "../types/auth";
+export const validateLoginForm = (user: LoginFormValues) => {
   const errors: ValidationErrors = {};
 
   if (!user.email) {
@@ -8,12 +8,10 @@ export const validateLoginForm = (user: LoginType, isReset: boolean) => {
     errors.email = "Invalid email format.";
   }
 
-  if (!isReset) {
-    if (!user.password) {
-      errors.password = "Password is required.";
-    } else if (user.password.length < 8) {
-      errors.password = "Password must be at least 8 characters.";
-    }
+  if (!user.password) {
+    errors.password = "Password is required.";
+  } else if (user.password.length < 8) {
+    errors.password = "Password must be at least 8 characters.";
   }
 
   return Object.keys(errors).length > 0 ? errors : null;

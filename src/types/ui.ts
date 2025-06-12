@@ -6,10 +6,18 @@ export interface SocialIcon {
   color: string;
 }
 
-const SocialIcons: SocialIcon[] = [
+export const SocialIcons: SocialIcon[] = [
   { icon: FaFacebook, color: "#3b5998" },
   { icon: FaGoogle, color: "red" },
   { icon: FaTwitter, color: "#1da1f2" },
 ];
 
-export default SocialIcons;
+export interface userType {
+  _id: string;
+  adminRole: string;
+  firstname: string;
+  username: string;
+  lastname: string;
+  email: string;
+  role: string;
+}

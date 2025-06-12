@@ -7,21 +7,9 @@ export function ProtectedRoute() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          fontSize: "1.5em",
-          fontWeight: "bold",
-          color: "aliceblue",
-          textAlign: "center",
-          fontFamily: "sans-serif",
-          width: "100%",
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <RiLoader2Line className="spin" size={30} />
+      <div className="flex items-center justify-center w-full h-screen bg-slate-900 text-aliceblue text-2xl font-bold font-sans">
+        Loading...
+        <RiLoader2Line className="animate-spin mr-2" size={30} />
       </div>
     );
   }

@@ -52,3 +52,41 @@ export type FormInputProps = {
   error?: FieldErrors<SignupFormValues>;
   required?: boolean;
 };
+
+export type ForgottenPasswordFormValues = {
+  email: string;
+};
+
+export interface ForgottenPasswordProps {
+  isLoading: boolean;
+  onSubmit: (data: { email: string }) => void;
+}
+
+export type LoginFormValues = {
+  email: string;
+  password: string;
+};
+
+export interface LoginFormProps {
+  isLoading: boolean;
+  onLogin: (data: LoginFormValues) => void;
+}
+
+export type ResetPasswordForm = {
+  password: string;
+  confirmPassword: string;
+};
+
+export interface ResetPasswordFormProps {
+  isLoading: boolean;
+  onSubmit: (data: ResetPasswordForm) => Promise<void>;
+}
+
+export interface ErrorType {
+  response: { data: { message: string } };
+}
+
+export interface ValidationErrors {
+  email?: string;
+  password?: string;
+}

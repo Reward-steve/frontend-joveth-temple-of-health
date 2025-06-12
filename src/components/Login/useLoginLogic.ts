@@ -1,34 +1,28 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { ErrorType } from "./types";
-import { validateLoginForm, validateEmail } from "../../utils/validateForm";
+import { type ErrorType } from "../../types/auth";
+import { validateLoginForm } from "../../utils/validateForm";
 import { toast } from "react-toastify";
 import { useApi } from "../../hooks/useApi";
 
 type LoginData = { email: string; password: string };
-type ResetData = { email: string };
 
 export const useLoginLogic = () => {
-  const [next, setNext] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
   const navigate = useNavigate();
   const { user, login } = useAuth();
-  const { api, message, error } = useApi();
+  const { error } = useApi();
 
   useEffect(() => {
-    document.title = next ? "Auth | Forgotten Password" : "Auth | Login";
-  }, [next]);
+    document.title = "Auth | Login";
+  }, []);
 
   useEffect(() => {
     if (error) {
       toast.error(error);
     }
-    if (message) {
-      toast.success(message);
-    }
-  }, [error, message]);
+  }, [error]);
 
   // Navigate when user logs in
   useEffect(() => {
@@ -51,7 +45,7 @@ export const useLoginLogic = () => {
 
   // Login handler
   const handleUserLogin = async (data: LoginData): Promise<void> => {
-    const errors = validateLoginForm(data, next);
+    const errors = validateLoginForm(data);
 
     if (errors && Object.keys(errors).length > 0) {
       toast.error("Please fix the errors before continuing.");
@@ -73,36 +67,8 @@ export const useLoginLogic = () => {
     }
   };
 
-  // Password reset handler
-  const handleForgottenPassword = async (data: ResetData): Promise<void> => {
-    const errors = validateEmail(data);
-
-    if (errors && Object.keys(errors).length > 0) {
-      toast.error("Please enter a valid email address.");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const forgottenPassword = await api("POST", "/auth/forgotpassword", {
-        email: data.email,
-      });
-      if (!forgottenPassword) {
-        return;
-      }
-    } catch (err) {
-      console.error("Password Reset Error:", err);
-      toast.error("Failed to send reset email.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return {
-    next,
-    setNext,
     isLoading,
     handleUserLogin,
-    handleForgottenPassword,
   };
 };

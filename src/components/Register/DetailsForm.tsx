@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import FormInput from "../form/FormInputs";
-import { DetailsFormProps } from "../../types/SignupFormProps";
+import { type DetailsFormProps } from "../../types/auth";
 import { FormContent } from "../form/FormContent";
 import { Button } from "../Button";
 

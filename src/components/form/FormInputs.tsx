@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { FaInfoCircle } from "react-icons/fa";
-import { FormInputProps } from "../../types/SignupFormProps";
+import { type FormInputProps } from "../../types/auth";
 
 export default function FormInput({
   id,
